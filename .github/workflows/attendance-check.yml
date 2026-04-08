@@ -19,6 +19,7 @@ jobs:
       ERP_PASSWORD: ${{ secrets.ERP_PASSWORD }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       HEADLESS: true
       ALWAYS_NOTIFY: false
       TIMEZONE: Asia/Kolkata
@@ -26,10 +27,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
