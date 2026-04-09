@@ -37,6 +37,44 @@ def _detect_no_new_classes(previous_subjects, current_subjects) -> bool:
     return True
 
 
+def _find_class_updates(previous_subjects, current_subjects):
+    updates = []
+
+    for subject_name, current in current_subjects.items():
+        previous = previous_subjects.get(subject_name)
+        if previous is None:
+            updates.append(
+                {
+                    "subject": subject_name,
+                    "change": "new subject",
+                    "held_before": 0,
+                    "held_after": current["held"],
+                    "present_before": 0,
+                    "present_after": current["present"],
+                }
+            )
+            continue
+
+        prev_held = int(previous.get("held", 0))
+        prev_present = int(previous.get("present", 0))
+        curr_held = int(current.get("held", 0))
+        curr_present = int(current.get("present", 0))
+
+        if curr_held > prev_held:
+            updates.append(
+                {
+                    "subject": subject_name,
+                    "change": "class added",
+                    "held_before": prev_held,
+                    "held_after": curr_held,
+                    "present_before": prev_present,
+                    "present_after": curr_present,
+                }
+            )
+
+    return updates
+
+
 def run_check() -> bool:
     result = fetch_overall_attendance()
     percent = result["percent"]
@@ -50,6 +88,7 @@ def run_check() -> bool:
     classes_changed = previous_subjects != current_subjects
     changed = overall_changed or classes_changed
     no_new_classes = _detect_no_new_classes(previous_subjects, current_subjects)
+    class_updates = _find_class_updates(previous_subjects, current_subjects)
 
     print(f"Current overall attendance: {percent}%")
     print(f"Subjects parsed: {len(subjects)}")
@@ -60,6 +99,7 @@ def run_check() -> bool:
             overall_percent=percent,
             subjects=subjects,
             no_new_classes=no_new_classes,
+            class_updates=class_updates,
         )
         sent = send_telegram_message(message)
         print("Telegram sent." if sent else "Telegram not sent (check bot config).")

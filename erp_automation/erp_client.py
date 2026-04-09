@@ -45,7 +45,9 @@ def _click_first(page, selectors) -> bool:
 def _extract_attendance_percent(page_text: str) -> str:
     patterns = [
         r"Overall\(%\)\s*:\s*([0-9]+(?:\.[0-9]+)?)\s*%",
+        r"Overall\s*\(?%\)?\s*:?\s*([0-9]+(?:\.[0-9]+)?)\s*%?",
         r"Attendance\s*Percentage\s*([0-9]+(?:\.[0-9]+)?)",
+        r"Attendance\s*%\s*:?\s*([0-9]+(?:\.[0-9]+)?)\s*%?",
         r"([0-9]+(?:\.[0-9]+)?)\s*%",
     ]
 
@@ -54,6 +56,30 @@ def _extract_attendance_percent(page_text: str) -> str:
         if match:
             return match.group(1)
     raise RuntimeError("Could not extract attendance percentage from ERP page.")
+
+
+def _calculate_overall_percent_from_subjects(subjects: List[Dict[str, str]]) -> str:
+    total_held = 0
+    total_present = 0
+
+    for item in subjects:
+        try:
+            held = int(float(item["held"]))
+            present = int(float(item["present"]))
+        except (KeyError, TypeError, ValueError):
+            continue
+
+        if held <= 0:
+            continue
+
+        total_held += held
+        total_present += present
+
+    if total_held <= 0:
+        raise RuntimeError("Could not derive overall attendance from subject rows.")
+
+    percent = (total_present / total_held) * 100
+    return f"{percent:.2f}".rstrip("0").rstrip(".")
 
 
 def _extract_subject_rows(page) -> List[Dict[str, str]]:
@@ -191,9 +217,12 @@ def fetch_overall_attendance() -> Dict[str, object]:
             )
             page.wait_for_timeout(2500)
 
-            body_text = page.locator("body").inner_text()
-            percent = _extract_attendance_percent(body_text)
             subjects = _extract_subject_rows(page)
+            body_text = page.locator("body").inner_text()
+            try:
+                percent = _extract_attendance_percent(body_text)
+            except RuntimeError:
+                percent = _calculate_overall_percent_from_subjects(subjects)
             source = page.url
 
             return {"percent": percent, "source": source, "subjects": subjects}

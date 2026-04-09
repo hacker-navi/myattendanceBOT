@@ -42,6 +42,7 @@ def build_attendance_update_message(
     overall_percent: str,
     subjects,
     no_new_classes: bool,
+    class_updates,
 ) -> str:
     now = datetime.now(ZoneInfo(TIMEZONE)).strftime("%d/%m/%Y %H:%M")
 
@@ -60,5 +61,19 @@ def build_attendance_update_message(
 
     lines.extend(["", "====================", ""])
     lines.append("➖ No new classes" if no_new_classes else "✅ New class data found")
+
+    if class_updates:
+        lines.append("")
+        lines.append("🆕 Updated classes:")
+        for update in class_updates:
+            subject = update["subject"]
+            held_before = update["held_before"]
+            held_after = update["held_after"]
+            present_before = update["present_before"]
+            present_after = update["present_after"]
+            change = update["change"]
+            lines.append(
+                f"• {subject} ({change}) Held: {held_before}->{held_after}, Present: {present_before}->{present_after}"
+            )
 
     return "\n".join(lines)
