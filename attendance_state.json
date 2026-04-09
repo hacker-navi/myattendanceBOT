@@ -1,6 +1,6 @@
 {
-  "last_percent": "85.81",
-  "last_checked_at": "2026-04-09 01:58:56",
+  "last_percent": "86.01",
+  "last_checked_at": "2026-04-09 05:08:11",
   "subjects": {
     "Compiler Design": {
       "held": 54,
@@ -8,9 +8,9 @@
       "percent": "81.5"
     },
     "Cloud Computing": {
-      "held": 50,
-      "present": 45,
-      "percent": "90.0"
+      "held": 54,
+      "present": 49,
+      "percent": "90.7"
     },
     "Cryptography & Network Security": {
       "held": 61,
@@ -33,9 +33,9 @@
       "percent": "100.0"
     },
     "Cloud Computing Lab": {
-      "held": 42,
-      "present": 33,
-      "percent": "78.6"
+      "held": 45,
+      "present": 36,
+      "percent": "80.0"
     },
     "Cryptography & Network Security Lab": {
       "held": 48,
