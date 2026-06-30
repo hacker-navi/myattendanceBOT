@@ -1,5 +1,26 @@
 {
-  "last_percent": "2017",
-  "last_checked_at": "2026-06-30 06:57:06",
-  "subjects": {}
+  "last_percent": "100",
+  "last_checked_at": "2026-06-30 11:43:29",
+  "subjects": {
+    "Deep Learning": {
+      "held": 1,
+      "present": 1,
+      "percent": "100.0"
+    },
+    "Devops": {
+      "held": 1,
+      "present": 1,
+      "percent": "100.0"
+    },
+    "Constitution of India": {
+      "held": 1,
+      "present": 1,
+      "percent": "100.0"
+    },
+    "SELF LEARNING": {
+      "held": 1,
+      "present": 1,
+      "percent": "100.0"
+    }
+  }
 }
