@@ -1,25 +1,30 @@
 {
   "last_percent": "100",
-  "last_checked_at": "2026-07-02 06:39:12",
+  "last_checked_at": "2026-07-02 11:32:06",
   "subjects": {
     "Deep Learning": {
+      "held": 3,
+      "present": 3,
+      "percent": "100.0"
+    },
+    "Devops": {
       "held": 2,
       "present": 2,
       "percent": "100.0"
     },
-    "Devops": {
-      "held": 1,
-      "present": 1,
+    "Generative AI": {
+      "held": 4,
+      "present": 4,
       "percent": "100.0"
     },
     "Utilization of Electrical Energy": {
-      "held": 1,
-      "present": 1,
+      "held": 2,
+      "present": 2,
       "percent": "100.0"
     },
     "Constitution of India": {
-      "held": 1,
-      "present": 1,
+      "held": 2,
+      "present": 2,
       "percent": "100.0"
     },
     "Technical Training": {
