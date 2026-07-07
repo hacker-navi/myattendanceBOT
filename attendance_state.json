@@ -1,6 +1,6 @@
 {
   "last_percent": "100",
-  "last_checked_at": "2026-07-07 06:43:22",
+  "last_checked_at": "2026-07-07 11:45:28",
   "subjects": {
     "Deep Learning": {
       "held": 7,
@@ -8,13 +8,13 @@
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
-      "held": 2,
-      "present": 2,
+      "held": 4,
+      "present": 4,
       "percent": "100.0"
     },
     "Devops": {
-      "held": 5,
-      "present": 5,
+      "held": 6,
+      "present": 6,
       "percent": "100.0"
     },
     "Generative AI": {
