@@ -1,10 +1,10 @@
 {
   "last_percent": "100",
-  "last_checked_at": "2026-07-10 02:39:50",
+  "last_checked_at": "2026-07-10 06:41:47",
   "subjects": {
     "Deep Learning": {
-      "held": 7,
-      "present": 7,
+      "held": 8,
+      "present": 8,
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
@@ -23,8 +23,8 @@
       "percent": "100.0"
     },
     "Utilization of Electrical Energy": {
-      "held": 6,
-      "present": 6,
+      "held": 7,
+      "present": 7,
       "percent": "100.0"
     },
     "Prompt Engineering": {
