@@ -1,21 +1,21 @@
 {
-  "last_percent": "100",
-  "last_checked_at": "2026-07-10 06:41:47",
+  "last_percent": "98.44",
+  "last_checked_at": "2026-07-10 11:48:47",
   "subjects": {
     "Deep Learning": {
-      "held": 8,
-      "present": 8,
+      "held": 9,
+      "present": 9,
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
-      "held": 4,
-      "present": 4,
+      "held": 5,
+      "present": 5,
       "percent": "100.0"
     },
     "Devops": {
-      "held": 7,
+      "held": 8,
       "present": 7,
-      "percent": "100.0"
+      "percent": "87.5"
     },
     "Generative AI": {
       "held": 9,
@@ -38,8 +38,8 @@
       "percent": "100.0"
     },
     "Evaluation of Industry Internship /Mini Project": {
-      "held": 2,
-      "present": 2,
+      "held": 4,
+      "present": 4,
       "percent": "100.0"
     },
     "Technical Training": {
