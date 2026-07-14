@@ -1,6 +1,6 @@
 {
-  "last_percent": "98.57",
-  "last_checked_at": "2026-07-14 05:26:17",
+  "last_percent": "98.59",
+  "last_checked_at": "2026-07-14 07:57:25",
   "subjects": {
     "Deep Learning": {
       "held": 10,
@@ -18,8 +18,8 @@
       "percent": "88.9"
     },
     "Generative AI": {
-      "held": 9,
-      "present": 9,
+      "held": 10,
+      "present": 10,
       "percent": "100.0"
     },
     "Utilization of Electrical Energy": {
