@@ -1,15 +1,15 @@
 {
-  "last_percent": "98.59",
-  "last_checked_at": "2026-07-14 07:57:25",
+  "last_percent": "98.65",
+  "last_checked_at": "2026-07-14 10:42:22",
   "subjects": {
     "Deep Learning": {
-      "held": 10,
-      "present": 10,
+      "held": 11,
+      "present": 11,
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
-      "held": 5,
-      "present": 5,
+      "held": 6,
+      "present": 6,
       "percent": "100.0"
     },
     "Devops": {
@@ -48,8 +48,8 @@
       "percent": "100.0"
     },
     "SELF LEARNING": {
-      "held": 3,
-      "present": 3,
+      "held": 4,
+      "present": 4,
       "percent": "100.0"
     },
     "ASSOCIATION": {
