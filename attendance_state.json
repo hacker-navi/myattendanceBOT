@@ -1,6 +1,6 @@
 {
-  "last_percent": "93",
-  "last_checked_at": "2026-07-18 13:06:18",
+  "last_percent": "94",
+  "last_checked_at": "2026-07-18 15:53:20",
   "subjects": {
     "Deep Learning": {
       "held": 14,
@@ -14,8 +14,8 @@
     },
     "Devops": {
       "held": 13,
-      "present": 8,
-      "percent": "61.5"
+      "present": 9,
+      "percent": "69.2"
     },
     "Generative AI": {
       "held": 13,
