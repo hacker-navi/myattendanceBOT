@@ -1,6 +1,6 @@
 {
-  "last_percent": "93.04",
-  "last_checked_at": "2026-07-22 11:06:09",
+  "last_percent": "93.22",
+  "last_checked_at": "2026-07-22 13:43:33",
   "subjects": {
     "Deep Learning": {
       "held": 15,
@@ -43,8 +43,8 @@
       "percent": "100.0"
     },
     "Technical Training": {
-      "held": 9,
-      "present": 9,
+      "held": 12,
+      "present": 12,
       "percent": "100.0"
     },
     "SELF LEARNING": {
