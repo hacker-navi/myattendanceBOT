@@ -1,6 +1,6 @@
 {
-  "last_percent": "92.74",
-  "last_checked_at": "2026-07-25 02:21:42",
+  "last_percent": "92.97",
+  "last_checked_at": "2026-07-25 13:17:20",
   "subjects": {
     "Deep Learning": {
       "held": 15,
@@ -8,24 +8,24 @@
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
-      "held": 10,
-      "present": 10,
+      "held": 11,
+      "present": 11,
       "percent": "100.0"
     },
     "Devops": {
-      "held": 16,
-      "present": 12,
-      "percent": "75.0"
+      "held": 17,
+      "present": 13,
+      "percent": "76.5"
     },
     "Generative AI": {
-      "held": 18,
-      "present": 18,
+      "held": 19,
+      "present": 19,
       "percent": "100.0"
     },
     "Utilization of Electrical Energy": {
-      "held": 14,
-      "present": 9,
-      "percent": "64.3"
+      "held": 15,
+      "present": 10,
+      "percent": "66.7"
     },
     "Prompt Engineering": {
       "held": 16,
