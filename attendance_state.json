@@ -1,6 +1,6 @@
 {
-  "last_percent": "92.97",
-  "last_checked_at": "2026-07-25 13:17:20",
+  "last_percent": "93.08",
+  "last_checked_at": "2026-07-25 16:03:03",
   "subjects": {
     "Deep Learning": {
       "held": 15,
@@ -53,8 +53,8 @@
       "percent": "100.0"
     },
     "ASSOCIATION": {
-      "held": 4,
-      "present": 4,
+      "held": 6,
+      "present": 6,
       "percent": "100.0"
     }
   }
