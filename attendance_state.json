@@ -1,6 +1,6 @@
 {
-  "last_percent": "93.92",
-  "last_checked_at": "2026-07-30 05:36:54",
+  "last_percent": "93.96",
+  "last_checked_at": "2026-07-30 08:19:25",
   "subjects": {
     "Deep Learning": {
       "held": 18,
@@ -23,9 +23,9 @@
       "percent": "100.0"
     },
     "Utilization of Electrical Energy": {
-      "held": 16,
-      "present": 11,
-      "percent": "68.8"
+      "held": 17,
+      "present": 12,
+      "percent": "70.6"
     },
     "Prompt Engineering": {
       "held": 19,
