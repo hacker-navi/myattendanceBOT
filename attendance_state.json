@@ -1,10 +1,10 @@
 {
-  "last_percent": "94.89",
-  "last_checked_at": "2026-08-04 11:21:24",
+  "last_percent": "94.94",
+  "last_checked_at": "2026-08-04 14:02:05",
   "subjects": {
     "Deep Learning": {
-      "held": 21,
-      "present": 21,
+      "held": 22,
+      "present": 22,
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
@@ -48,8 +48,8 @@
       "percent": "100.0"
     },
     "SELF LEARNING": {
-      "held": 6,
-      "present": 6,
+      "held": 7,
+      "present": 7,
       "percent": "100.0"
     },
     "ASSOCIATION": {
