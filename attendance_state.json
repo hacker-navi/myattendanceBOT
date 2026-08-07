@@ -1,45 +1,45 @@
 {
-  "last_percent": "95.11",
-  "last_checked_at": "2026-08-06 02:11:35",
+  "last_percent": "95.41",
+  "last_checked_at": "2026-08-07 12:54:44",
   "subjects": {
     "Deep Learning": {
-      "held": 22,
-      "present": 22,
-      "percent": "100.0"
-    },
-    "Human Resources & Project Management": {
-      "held": 15,
-      "present": 15,
-      "percent": "100.0"
-    },
-    "Devops": {
-      "held": 24,
-      "present": 20,
-      "percent": "83.3"
-    },
-    "Generative AI": {
-      "held": 27,
-      "present": 27,
-      "percent": "100.0"
-    },
-    "Utilization of Electrical Energy": {
-      "held": 20,
-      "present": 15,
-      "percent": "75.0"
-    },
-    "Prompt Engineering": {
       "held": 23,
       "present": 23,
       "percent": "100.0"
     },
+    "Human Resources & Project Management": {
+      "held": 16,
+      "present": 16,
+      "percent": "100.0"
+    },
+    "Devops": {
+      "held": 26,
+      "present": 22,
+      "percent": "84.6"
+    },
+    "Generative AI": {
+      "held": 28,
+      "present": 28,
+      "percent": "100.0"
+    },
+    "Utilization of Electrical Energy": {
+      "held": 22,
+      "present": 17,
+      "percent": "77.3"
+    },
+    "Prompt Engineering": {
+      "held": 25,
+      "present": 25,
+      "percent": "100.0"
+    },
     "Constitution of India": {
-      "held": 12,
-      "present": 12,
+      "held": 13,
+      "present": 13,
       "percent": "100.0"
     },
     "Evaluation of Industry Internship /Mini Project": {
-      "held": 8,
-      "present": 8,
+      "held": 10,
+      "present": 10,
       "percent": "100.0"
     },
     "Technical Training": {
