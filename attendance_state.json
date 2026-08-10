@@ -1,6 +1,6 @@
 {
-  "last_percent": "95.12",
-  "last_checked_at": "2026-08-10 12:59:12",
+  "last_percent": "95.19",
+  "last_checked_at": "2026-08-10 18:52:17",
   "subjects": {
     "Deep Learning": {
       "held": 24,
@@ -28,8 +28,8 @@
       "percent": "78.3"
     },
     "Prompt Engineering": {
-      "held": 25,
-      "present": 25,
+      "held": 28,
+      "present": 28,
       "percent": "100.0"
     },
     "Constitution of India": {
