@@ -1,10 +1,10 @@
 {
-  "last_percent": "95.52",
-  "last_checked_at": "2026-08-10 07:24:41",
+  "last_percent": "95.12",
+  "last_checked_at": "2026-08-10 12:59:12",
   "subjects": {
     "Deep Learning": {
-      "held": 23,
-      "present": 23,
+      "held": 24,
+      "present": 24,
       "percent": "100.0"
     },
     "Human Resources & Project Management": {
@@ -13,9 +13,9 @@
       "percent": "100.0"
     },
     "Devops": {
-      "held": 27,
+      "held": 28,
       "present": 23,
-      "percent": "85.2"
+      "percent": "82.1"
     },
     "Generative AI": {
       "held": 30,
@@ -53,8 +53,8 @@
       "percent": "100.0"
     },
     "ASSOCIATION": {
-      "held": 8,
-      "present": 8,
+      "held": 10,
+      "present": 10,
       "percent": "100.0"
     }
   }
