@@ -1,11 +1,11 @@
 {
-  "last_percent": "92.21",
-  "last_checked_at": "2026-08-17 01:02:12",
+  "last_percent": "92.37",
+  "last_checked_at": "2026-08-17 09:36:50",
   "subjects": {
     "Deep Learning": {
-      "held": 28,
-      "present": 27,
-      "percent": "96.4"
+      "held": 29,
+      "present": 28,
+      "percent": "96.6"
     },
     "Human Resources & Project Management": {
       "held": 19,
@@ -13,9 +13,9 @@
       "percent": "94.7"
     },
     "Devops": {
-      "held": 31,
-      "present": 24,
-      "percent": "77.4"
+      "held": 32,
+      "present": 25,
+      "percent": "78.1"
     },
     "Generative AI": {
       "held": 33,
@@ -28,8 +28,8 @@
       "percent": "73.1"
     },
     "Prompt Engineering": {
-      "held": 28,
-      "present": 28,
+      "held": 31,
+      "present": 31,
       "percent": "100.0"
     },
     "Constitution of India": {
