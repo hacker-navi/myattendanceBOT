@@ -1,6 +1,6 @@
 {
-  "last_percent": "89.8",
-  "last_checked_at": "2026-09-08 13:17:01",
+  "last_percent": "89.83",
+  "last_checked_at": "2026-09-08 18:16:56",
   "subjects": {
     "Deep Learning": {
       "held": 37,
@@ -33,9 +33,9 @@
       "percent": "97.1"
     },
     "Constitution of India": {
-      "held": 19,
-      "present": 18,
-      "percent": "94.7"
+      "held": 20,
+      "present": 19,
+      "percent": "95.0"
     },
     "Evaluation of Industry Internship /Mini Project": {
       "held": 12,
