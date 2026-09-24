@@ -1,6 +1,6 @@
 {
-  "last_percent": "88.3",
-  "last_checked_at": "2026-09-24 02:58:31",
+  "last_percent": "87.81",
+  "last_checked_at": "2026-09-24 08:15:24",
   "subjects": {
     "Deep Learning": {
       "held": 47,
@@ -23,9 +23,9 @@
       "percent": "88.7"
     },
     "Utilization of Electrical Energy": {
-      "held": 40,
+      "held": 41,
       "present": 31,
-      "percent": "77.5"
+      "percent": "75.6"
     },
     "Prompt Engineering": {
       "held": 39,
@@ -33,9 +33,9 @@
       "percent": "97.4"
     },
     "Constitution of India": {
-      "held": 24,
+      "held": 25,
       "present": 22,
-      "percent": "91.7"
+      "percent": "88.0"
     },
     "Evaluation of Industry Internship /Mini Project": {
       "held": 16,
