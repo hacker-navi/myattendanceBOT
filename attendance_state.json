@@ -1,6 +1,6 @@
 {
-  "last_percent": "87.26",
-  "last_checked_at": "2026-09-25 11:03:19",
+  "last_percent": "87.33",
+  "last_checked_at": "2026-09-25 16:25:59",
   "subjects": {
     "Deep Learning": {
       "held": 49,
@@ -38,9 +38,9 @@
       "percent": "88.0"
     },
     "Evaluation of Industry Internship /Mini Project": {
-      "held": 16,
-      "present": 14,
-      "percent": "87.5"
+      "held": 18,
+      "present": 16,
+      "percent": "88.9"
     },
     "Technical Training": {
       "held": 36,
