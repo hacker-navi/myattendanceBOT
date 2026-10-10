@@ -1,51 +1,51 @@
 {
-  "last_percent": "83.05",
-  "last_checked_at": "2026-10-07 00:20:57",
+  "last_percent": "83.97",
+  "last_checked_at": "2026-10-10 11:50:49",
   "subjects": {
     "Deep Learning": {
-      "held": 55,
-      "present": 45,
-      "percent": "81.8"
+      "held": 58,
+      "present": 48,
+      "percent": "82.8"
     },
     "Human Resources & Project Management": {
-      "held": 32,
-      "present": 29,
-      "percent": "90.6"
+      "held": 34,
+      "present": 31,
+      "percent": "91.2"
     },
     "Devops": {
-      "held": 57,
-      "present": 40,
-      "percent": "70.2"
+      "held": 60,
+      "present": 43,
+      "percent": "71.7"
     },
     "Generative AI": {
-      "held": 62,
-      "present": 51,
-      "percent": "82.3"
+      "held": 65,
+      "present": 54,
+      "percent": "83.1"
     },
     "Utilization of Electrical Energy": {
-      "held": 46,
-      "present": 35,
-      "percent": "76.1"
+      "held": 50,
+      "present": 39,
+      "percent": "78.0"
     },
     "Prompt Engineering": {
-      "held": 47,
-      "present": 43,
-      "percent": "91.5"
+      "held": 48,
+      "present": 44,
+      "percent": "91.7"
     },
     "Constitution of India": {
-      "held": 28,
-      "present": 23,
-      "percent": "82.1"
+      "held": 29,
+      "present": 24,
+      "percent": "82.8"
     },
     "Evaluation of Industry Internship /Mini Project": {
-      "held": 18,
-      "present": 16,
-      "percent": "88.9"
+      "held": 20,
+      "present": 18,
+      "percent": "90.0"
     },
     "Technical Training": {
-      "held": 39,
-      "present": 33,
-      "percent": "84.6"
+      "held": 42,
+      "present": 36,
+      "percent": "85.7"
     },
     "SELF LEARNING": {
       "held": 15,
@@ -53,8 +53,8 @@
       "percent": "86.7"
     },
     "ASSOCIATION": {
-      "held": 20,
-      "present": 20,
+      "held": 22,
+      "present": 22,
       "percent": "100.0"
     }
   }
