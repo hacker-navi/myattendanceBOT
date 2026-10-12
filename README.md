@@ -99,7 +99,21 @@ The notification is sent like:
 
 ====================
 
-➖ No new classes
+✅ New class data found
+
+🆕 Updated classes:
+• Cryptography & Network Security (class added) Held: 35->36, Present: 32->33
+• Machine Learning (class added) Held: 27->28, Present: 25->26
+
+====================
+
+🆕 TODAY'S CLASS UPDATES
+
+🟢 Cryptography & Network Security
+➕ New: 1 | ✅ Attended
+
+🟢 Machine Learning
+➕ New: 1 | ✅ Attended
 ```
 
 Rules:
@@ -107,7 +121,8 @@ Rules:
 - `🟢` for >= 90%
 - `🟡` for >= 75% and < 90%
 - `🔴` for < 75%
-- Bottom line shows `No new classes` when total held classes did not increase since last saved state.
+- Shows `➖ No new classes` when total held classes did not increase since last check.
+- Shows `🆕 TODAY'S CLASS UPDATES` indicating whether you were marked `✅ Attended`, `❌ Absent`, or mixed.
 
 ## GitHub Actions Automation
 

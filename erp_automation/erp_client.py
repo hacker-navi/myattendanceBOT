@@ -1,4 +1,5 @@
 import re
+import time
 from typing import Dict, List
 
 from playwright.sync_api import Error as PlaywrightError
@@ -82,16 +83,19 @@ def _calculate_overall_percent_from_subjects(subjects: List[Dict[str, str]]) -> 
     return f"{percent:.2f}".rstrip("0").rstrip(".")
 
 
-def _extract_subject_rows(page) -> List[Dict[str, str]]:
-    tables = page.locator("table")
+def _extract_subject_rows_from_scope(scope) -> List[Dict[str, str]]:
+    tables = scope.locator("table")
     table_count = tables.count()
 
     for index in range(table_count):
         table = tables.nth(index)
-        table_text = table.inner_text()
+        try:
+            table_text = table.inner_text()
+        except Exception:
+            continue
         if not re.search(r"Subject", table_text, flags=re.IGNORECASE):
             continue
-        if not re.search(r"Classes\s*Held", table_text, flags=re.IGNORECASE):
+        if not re.search(r"Held", table_text, flags=re.IGNORECASE):
             continue
 
         rows = table.locator("tr")
@@ -135,6 +139,17 @@ def _extract_subject_rows(page) -> List[Dict[str, str]]:
         if subjects:
             return subjects
 
+    return []
+
+
+def _extract_subject_rows(page) -> List[Dict[str, str]]:
+    subjects = _extract_subject_rows_from_scope(page)
+    if subjects:
+        return subjects
+    for frame in page.frames:
+        subjects = _extract_subject_rows_from_scope(frame)
+        if subjects:
+            return subjects
     return []
 
 
@@ -211,20 +226,59 @@ def fetch_overall_attendance() -> Dict[str, object]:
                 [
                     "button:has-text('Attendance')",
                     "a:has-text('Attendance')",
+                    "input[value*='Attendance' i]",
+                    "[id*='Attendance' i]",
+                    "span:has-text('Attendance')",
                     "text=Attendance",
                     "text=attandance",
                 ],
             )
-            page.wait_for_timeout(2500)
 
-            subjects = _extract_subject_rows(page)
-            body_text = page.locator("body").inner_text()
-            try:
-                percent = _extract_attendance_percent(body_text)
-            except RuntimeError:
-                percent = _calculate_overall_percent_from_subjects(subjects)
+            # Wait dynamically up to 25s for attendance table and percentage to load
+            start_time = time.time()
+            max_wait = 25
+            subjects = []
+            percent = ""
+
+            while time.time() - start_time < max_wait:
+                subjects = _extract_subject_rows(page)
+                try:
+                    body_text = page.locator("body").inner_text()
+                    percent = _extract_attendance_percent(body_text)
+                except Exception:
+                    if subjects:
+                        try:
+                            percent = _calculate_overall_percent_from_subjects(subjects)
+                        except Exception:
+                            percent = ""
+
+                if subjects and percent:
+                    break
+
+                page.wait_for_timeout(1000)
+
+            if not percent and subjects:
+                try:
+                    percent = _calculate_overall_percent_from_subjects(subjects)
+                except Exception:
+                    pass
+
+            if not subjects or not percent:
+                try:
+                    page.screenshot(path="attendance_error.png")
+                    print("Attendance load incomplete. Saved debug screenshot to attendance_error.png")
+                except Exception:
+                    pass
+
+                if not HEADLESS:
+                    page.wait_for_timeout(5000)
+
+                raise RuntimeError(
+                    f"Could not extract attendance data. Found {len(subjects)} subjects, percent='{percent}'. "
+                    f"Current URL: {page.url}"
+                )
+
             source = page.url
-
             return {"percent": percent, "source": source, "subjects": subjects}
         finally:
             context.close()

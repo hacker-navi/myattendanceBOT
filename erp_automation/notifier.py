@@ -76,4 +76,53 @@ def build_attendance_update_message(
                 f"• {subject} ({change}) Held: {held_before}->{held_after}, Present: {present_before}->{present_after}"
             )
 
+        subject_map = {item["subject"]: item for item in subjects}
+        today_lines = []
+        for update in class_updates:
+            subject = update["subject"]
+            try:
+                held_before = int(update.get("held_before", 0))
+                held_after = int(update.get("held_after", 0))
+                present_before = int(update.get("present_before", 0))
+                present_after = int(update.get("present_after", 0))
+            except (TypeError, ValueError):
+                continue
+
+            new_held = held_after - held_before
+            new_present = present_after - present_before
+            new_absent = new_held - new_present
+
+            if held_before == 0 and held_after > 5:
+                continue
+
+            subj_item = subject_map.get(subject, {})
+            percent = subj_item.get("percent") if subj_item.get("percent") is not None else update.get("percent", "")
+            icon = _status_icon(str(percent))
+
+            if new_held > 0:
+                if new_present == new_held:
+                    status_text = "✅ Attended"
+                elif new_present == 0:
+                    status_text = "❌ Absent"
+                elif new_present > 0 and new_absent > 0:
+                    status_text = f"✅ {new_present} Attended, ❌ {new_absent} Absent"
+                elif new_present > new_held:
+                    status_text = f"✅ Attended (+{new_present})"
+                else:
+                    status_text = "❌ Absent"
+                detail_line = f"➕ New: {new_held} | {status_text}"
+            else:
+                if new_present > 0:
+                    detail_line = f"✅ Attended: +{new_present}"
+                elif new_present < 0:
+                    detail_line = f"❌ Absent ({new_present})"
+                else:
+                    detail_line = "ℹ️ Updated"
+
+            today_lines.extend(["", f"{icon} {subject}", detail_line])
+
+        if today_lines:
+            lines.extend(["", "====================", "", "🆕 TODAY'S CLASS UPDATES"])
+            lines.extend(today_lines)
+
     return "\n".join(lines)

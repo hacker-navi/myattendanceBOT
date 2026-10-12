@@ -26,12 +26,16 @@ def _build_subject_map(subjects):
 
 def _detect_no_new_classes(previous_subjects, current_subjects) -> bool:
     if not previous_subjects or not current_subjects:
-        return False
+        return True
+
+    common_subjects = set(previous_subjects.keys()) & set(current_subjects.keys())
+    if not common_subjects:
+        return True
 
     for subject_name, current in current_subjects.items():
         previous = previous_subjects.get(subject_name)
         if previous is None:
-            return False
+            continue
         if current["held"] > int(previous.get("held", 0)):
             return False
     return True
@@ -39,20 +43,16 @@ def _detect_no_new_classes(previous_subjects, current_subjects) -> bool:
 
 def _find_class_updates(previous_subjects, current_subjects):
     updates = []
+    if not previous_subjects or not current_subjects:
+        return []
+
+    common_subjects = set(previous_subjects.keys()) & set(current_subjects.keys())
+    if not common_subjects:
+        return []
 
     for subject_name, current in current_subjects.items():
         previous = previous_subjects.get(subject_name)
         if previous is None:
-            updates.append(
-                {
-                    "subject": subject_name,
-                    "change": "new subject",
-                    "held_before": 0,
-                    "held_after": current["held"],
-                    "present_before": 0,
-                    "present_after": current["present"],
-                }
-            )
             continue
 
         prev_held = int(previous.get("held", 0))
@@ -69,6 +69,19 @@ def _find_class_updates(previous_subjects, current_subjects):
                     "held_after": curr_held,
                     "present_before": prev_present,
                     "present_after": curr_present,
+                    "percent": current.get("percent", ""),
+                }
+            )
+        elif curr_present != prev_present:
+            updates.append(
+                {
+                    "subject": subject_name,
+                    "change": "attendance adjusted",
+                    "held_before": prev_held,
+                    "held_after": curr_held,
+                    "present_before": prev_present,
+                    "present_after": curr_present,
+                    "percent": current.get("percent", ""),
                 }
             )
 
