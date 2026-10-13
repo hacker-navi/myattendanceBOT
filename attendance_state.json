@@ -1,6 +1,6 @@
 {
-  "last_percent": "83.56",
-  "last_checked_at": "2026-10-13 10:03:46",
+  "last_percent": "83.41",
+  "last_checked_at": "2026-10-13 18:49:40",
   "subjects": {
     "Deep Learning": {
       "held": 60,
@@ -13,9 +13,9 @@
       "percent": "91.4"
     },
     "Devops": {
-      "held": 61,
+      "held": 62,
       "present": 43,
-      "percent": "70.5"
+      "percent": "69.4"
     },
     "Generative AI": {
       "held": 67,
@@ -33,9 +33,9 @@
       "percent": "91.7"
     },
     "Constitution of India": {
-      "held": 29,
-      "present": 24,
-      "percent": "82.8"
+      "held": 30,
+      "present": 25,
+      "percent": "83.3"
     },
     "Evaluation of Industry Internship /Mini Project": {
       "held": 20,
