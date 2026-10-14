@@ -1,11 +1,11 @@
 {
-  "last_percent": "83.44",
-  "last_checked_at": "2026-10-14 08:21:24",
+  "last_percent": "83.87",
+  "last_checked_at": "2026-10-14 14:18:42",
   "subjects": {
     "Deep Learning": {
-      "held": 60,
-      "present": 49,
-      "percent": "81.7"
+      "held": 62,
+      "present": 51,
+      "percent": "82.3"
     },
     "Human Resources & Project Management": {
       "held": 35,
@@ -28,9 +28,9 @@
       "percent": "78.4"
     },
     "Prompt Engineering": {
-      "held": 48,
-      "present": 44,
-      "percent": "91.7"
+      "held": 55,
+      "present": 51,
+      "percent": "92.7"
     },
     "Constitution of India": {
       "held": 30,
@@ -43,9 +43,9 @@
       "percent": "90.0"
     },
     "Technical Training": {
-      "held": 42,
-      "present": 36,
-      "percent": "85.7"
+      "held": 45,
+      "present": 39,
+      "percent": "86.7"
     },
     "SELF LEARNING": {
       "held": 16,
