@@ -1,60 +1,60 @@
 {
-  "last_percent": "83.64",
-  "last_checked_at": "2026-10-25 03:01:47",
+  "last_percent": "83.69",
+  "last_checked_at": "2026-11-08 11:15:47",
   "subjects": {
     "Deep Learning": {
-      "held": 63,
-      "present": 52,
-      "percent": "82.5"
+      "held": 68,
+      "present": 56,
+      "percent": "82.4"
     },
     "Human Resources & Project Management": {
-      "held": 37,
-      "present": 33,
-      "percent": "89.2"
+      "held": 42,
+      "present": 37,
+      "percent": "88.1"
     },
     "Devops": {
-      "held": 65,
-      "present": 46,
-      "percent": "70.8"
+      "held": 71,
+      "present": 51,
+      "percent": "71.8"
     },
     "Generative AI": {
-      "held": 70,
-      "present": 58,
-      "percent": "82.9"
+      "held": 74,
+      "present": 61,
+      "percent": "82.4"
     },
     "Utilization of Electrical Energy": {
-      "held": 54,
-      "present": 43,
-      "percent": "79.6"
+      "held": 58,
+      "present": 47,
+      "percent": "81.0"
     },
     "Prompt Engineering": {
-      "held": 56,
-      "present": 51,
-      "percent": "91.1"
+      "held": 59,
+      "present": 54,
+      "percent": "91.5"
     },
     "Constitution of India": {
-      "held": 31,
-      "present": 26,
-      "percent": "83.9"
-    },
-    "Evaluation of Industry Internship /Mini Project": {
-      "held": 22,
-      "present": 18,
+      "held": 33,
+      "present": 27,
       "percent": "81.8"
     },
+    "Evaluation of Industry Internship /Mini Project": {
+      "held": 24,
+      "present": 20,
+      "percent": "83.3"
+    },
     "Technical Training": {
-      "held": 45,
-      "present": 39,
-      "percent": "86.7"
+      "held": 49,
+      "present": 43,
+      "percent": "87.8"
     },
     "SELF LEARNING": {
-      "held": 16,
+      "held": 17,
       "present": 14,
-      "percent": "87.5"
+      "percent": "82.4"
     },
     "ASSOCIATION": {
-      "held": 24,
-      "present": 24,
+      "held": 26,
+      "present": 26,
       "percent": "100.0"
     }
   }

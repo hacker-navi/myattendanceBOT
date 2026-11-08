@@ -43,6 +43,14 @@ jobs:
       - name: Run attendance check
         run: python check_attendance_once.py
 
+      - name: Upload debug screenshot on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: attendance-debug-screenshot
+          path: attendance_error.png
+          if-no-files-found: ignore
+
       - name: Commit state snapshot
         run: |
           git config user.name "github-actions[bot]"

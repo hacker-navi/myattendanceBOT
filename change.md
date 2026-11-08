@@ -68,3 +68,31 @@ If your friends are experiencing the same error in their repositories:
    git push origin main
    ```
 6. Re-run the workflow in **GitHub Actions** -> It will use Ubuntu 24.04 LTS and install Playwright Chromium without any errors.
+
+---
+
+## 5. Issue 2: `RuntimeError: Could not extract attendance data... Current URL: ***Login/`
+
+### Why Did This Occur?
+* When navigating to `ERP_ATTENDANCE_URL`, the portal redirected back to `Login/`.
+* On GitHub Actions (cloud runners outside India), network latency is higher. The script was waiting only a fixed 3 seconds before navigating, cutting off the login postback before session cookies were stored.
+* Additionally, Headless Chromium on Linux can be challenged by ERP security if standard browser user agents and dialog handlers are missing.
+* Finally, if `ERP_USERNAME` or `ERP_PASSWORD` in GitHub Secrets has a typo, leading/trailing spaces, or was recently changed, ERP rejects the login.
+
+### What Was Done to Fix It:
+1. **Dynamic Login Wait & Verification** in `erp_automation/erp_client.py`:
+   - Waits up to 15s for the URL to change from the login page instead of a hardcoded 3s.
+   - Trims whitespace from `ERP_USERNAME` and `ERP_PASSWORD`.
+   - Adds desktop Windows Chrome User-Agent and automation avoidance flags.
+   - Automatically accepts any session popup dialogs.
+   - If ERP redirects back to login, extracts and prints the exact error message from the page.
+2. **Artifact Screenshot Upload** in `.github/workflows/attendance-check.yml`:
+   - If attendance extraction fails, GitHub Actions now saves `attendance_error.png` under workflow run artifacts so you can inspect the exact browser screen.
+
+### Checklist for You and Your Friends:
+1. In your GitHub repository, go to **Settings** -> **Secrets and variables** -> **Actions**.
+2. Verify **`ERP_USERNAME`** and **`ERP_PASSWORD`**:
+   - Ensure there are no accidental spaces before or after the username or password.
+   - Verify roll number characters (e.g. check letter `O` vs digit `0`).
+   - If college portal password was changed recently, update it in GitHub Secrets.
+

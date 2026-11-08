@@ -154,10 +154,15 @@ def _extract_subject_rows(page) -> List[Dict[str, str]]:
 
 
 def _launch_browser(playwright):
+    browser_args = [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-blink-features=AutomationControlled",
+    ]
     launch_attempts = [
-        ("bundled-chromium", {"headless": HEADLESS}),
-        ("chrome", {"headless": HEADLESS, "channel": "chrome"}),
-        ("msedge", {"headless": HEADLESS, "channel": "msedge"}),
+        ("bundled-chromium", {"headless": HEADLESS, "args": browser_args}),
+        ("chrome", {"headless": HEADLESS, "channel": "chrome", "args": browser_args}),
+        ("msedge", {"headless": HEADLESS, "channel": "msedge", "args": browser_args}),
     ]
 
     last_error = None
@@ -174,13 +179,28 @@ def _launch_browser(playwright):
 
 
 def fetch_overall_attendance() -> Dict[str, object]:
-    if not ERP_USERNAME or not ERP_PASSWORD:
-        raise RuntimeError("Missing ERP_USERNAME or ERP_PASSWORD in .env")
+    username = ERP_USERNAME.strip()
+    password = ERP_PASSWORD.strip()
+    if not username or not password:
+        raise RuntimeError("Missing ERP_USERNAME or ERP_PASSWORD in .env / GitHub Secrets")
 
     with sync_playwright() as playwright:
         browser = _launch_browser(playwright)
-        context = browser.new_context()
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+            viewport={"width": 1366, "height": 768},
+        )
         page = context.new_page()
+
+        # Handle any alert or confirm dialogs automatically
+        def _handle_dialog(dialog):
+            print(f"ERP Dialog appeared: '{dialog.message}' -> accepting")
+            try:
+                dialog.accept()
+            except Exception:
+                pass
+
+        page.on("dialog", _handle_dialog)
 
         try:
             page.goto(ERP_LOGIN_URL, timeout=45000, wait_until="domcontentloaded")
@@ -192,7 +212,7 @@ def fetch_overall_attendance() -> Dict[str, object]:
                     "input[id*='User'][type='text']",
                     "input[type='text']",
                 ],
-                ERP_USERNAME,
+                username,
             )
             pass_ok = _fill_first(
                 page,
@@ -201,7 +221,7 @@ def fetch_overall_attendance() -> Dict[str, object]:
                     "input[id*='Pass'][type='password']",
                     "input[type='password']",
                 ],
-                ERP_PASSWORD,
+                password,
             )
 
             if not user_ok or not pass_ok:
@@ -218,8 +238,37 @@ def fetch_overall_attendance() -> Dict[str, object]:
             if not clicked:
                 page.keyboard.press("Enter")
 
-            page.wait_for_timeout(3000)
+            # Wait dynamically up to 15s for login submission and redirect
+            start_login = time.time()
+            while time.time() - start_login < 15:
+                # If URL changed away from login, login succeeded!
+                if "login" not in page.url.lower():
+                    break
+                page.wait_for_timeout(1000)
+
+            page.wait_for_timeout(2000)
             page.goto(ERP_ATTENDANCE_URL, timeout=45000, wait_until="domcontentloaded")
+
+            # Check if ERP redirected back to login (indicates invalid credentials or session rejection)
+            if "login" in page.url.lower():
+                page.screenshot(path="attendance_error.png")
+                # Check for error text on login page
+                err_text = ""
+                try:
+                    for sel in [".error", "#lblError", "[id*='error' i]", "[class*='alert' i]", "font[color='red']"]:
+                        el = page.locator(sel).first
+                        if el.is_visible(timeout=500):
+                            err_text = el.inner_text().strip()
+                            if err_text:
+                                break
+                except Exception:
+                    pass
+
+                err_detail = f" Message on page: '{err_text}'" if err_text else ""
+                raise RuntimeError(
+                    f"Authentication failed: ERP redirected back to login ({page.url}).{err_detail} "
+                    "Please verify ERP_USERNAME and ERP_PASSWORD in GitHub Secrets."
+                )
 
             _click_first(
                 page,
