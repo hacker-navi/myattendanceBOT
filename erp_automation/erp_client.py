@@ -202,19 +202,21 @@ def fetch_overall_attendance() -> Dict[str, object]:
 
         page.on("dialog", _handle_dialog)
 
-        # Capture login API responses for precise diagnostics
+        # Capture all login/POST API responses for precise diagnostics
         login_api_response = {"status": None, "body": ""}
 
         def _on_response(res):
-            if "Default.aspx/Login" in res.url or "PageMethods" in res.url:
+            if "login" in res.url.lower() or res.request.method == "POST":
                 try:
+                    body = res.text()[:300]
                     login_api_response["status"] = res.status
-                    login_api_response["body"] = res.text()
-                    print(f"Login API response: status={res.status}, body={res.text()[:200]}")
-                except Exception:
-                    pass
+                    login_api_response["body"] = body
+                    print(f"Network: [{res.request.method}] {res.url} -> HTTP {res.status}: {body}", flush=True)
+                except Exception as e:
+                    print(f"Network: [{res.request.method}] {res.url} -> HTTP {res.status} (could not read body: {e})", flush=True)
 
         page.on("response", _on_response)
+        page.on("console", lambda msg: print(f"Browser Console [{msg.type}]: {msg.text}", flush=True))
 
         try:
             page.goto(ERP_LOGIN_URL, timeout=45000, wait_until="domcontentloaded")
@@ -279,6 +281,13 @@ def fetch_overall_attendance() -> Dict[str, object]:
 
             if not login_success:
                 page.screenshot(path="attendance_error.png")
+                body_snippet = ""
+                try:
+                    body_snippet = page.locator("body").inner_text()[:400].replace("\n", " ").strip()
+                    print(f"Page content after login attempt: {body_snippet}", flush=True)
+                except Exception:
+                    pass
+
                 err_text = ""
                 try:
                     alert_el = page.locator("#alert_container, #alert_div").first
@@ -289,6 +298,8 @@ def fetch_overall_attendance() -> Dict[str, object]:
 
                 if not err_text and login_api_response.get("body"):
                     err_text = login_api_response["body"]
+                if not err_text and body_snippet:
+                    err_text = body_snippet
 
                 err_detail = f" Server response: '{err_text}'." if err_text else ""
                 raise RuntimeError(

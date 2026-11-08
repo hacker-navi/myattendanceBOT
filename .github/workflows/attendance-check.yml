@@ -24,6 +24,7 @@ jobs:
       ALWAYS_NOTIFY: false
       TIMEZONE: Asia/Kolkata
       STATE_FILE: attendance_state.json
+      PYTHONUNBUFFERED: "1"
 
     steps:
       - name: Checkout
