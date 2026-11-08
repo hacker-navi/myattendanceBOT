@@ -202,14 +202,29 @@ def fetch_overall_attendance() -> Dict[str, object]:
 
         page.on("dialog", _handle_dialog)
 
+        # Capture login API responses for precise diagnostics
+        login_api_response = {"status": None, "body": ""}
+
+        def _on_response(res):
+            if "Default.aspx/Login" in res.url or "PageMethods" in res.url:
+                try:
+                    login_api_response["status"] = res.status
+                    login_api_response["body"] = res.text()
+                    print(f"Login API response: status={res.status}, body={res.text()[:200]}")
+                except Exception:
+                    pass
+
+        page.on("response", _on_response)
+
         try:
             page.goto(ERP_LOGIN_URL, timeout=45000, wait_until="domcontentloaded")
 
             user_ok = _fill_first(
                 page,
                 [
-                    "input[name*='User'][type='text']",
-                    "input[id*='User'][type='text']",
+                    "#txtusername",
+                    "input[name='txtusername']",
+                    "input[name*='User' i][type='text']",
                     "input[type='text']",
                 ],
                 username,
@@ -217,8 +232,9 @@ def fetch_overall_attendance() -> Dict[str, object]:
             pass_ok = _fill_first(
                 page,
                 [
-                    "input[name*='Pass'][type='password']",
-                    "input[id*='Pass'][type='password']",
+                    "#txtpassword",
+                    "input[name='txtpassword']",
+                    "input[name*='Pass' i][type='password']",
                     "input[type='password']",
                 ],
                 password,
@@ -239,7 +255,11 @@ def fetch_overall_attendance() -> Dict[str, object]:
                 ],
             )
             if not clicked:
-                page.keyboard.press("Enter")
+                try:
+                    page.evaluate("() => typeof login === 'function' && login()")
+                    clicked = True
+                except Exception:
+                    page.keyboard.press("Enter")
 
             # Wait dynamically up to 25s for login submission and redirect
             start_login = time.time()
@@ -249,24 +269,30 @@ def fetch_overall_attendance() -> Dict[str, object]:
                 if page.url != initial_url:
                     login_success = True
                     break
+
+                # Check if server explicitly returned an error response
+                api_body = login_api_response.get("body", "")
+                if api_body and ("check User Name" in api_body or "Invalid" in api_body or "Error" in api_body):
+                    break
+
                 page.wait_for_timeout(500)
 
             if not login_success:
                 page.screenshot(path="attendance_error.png")
                 err_text = ""
                 try:
-                    for sel in [".sweet-alert", ".toast-message", ".alert-danger", ".error", "#lblError", "[class*='error' i]", "font[color='red']"]:
-                        el = page.locator(sel).first
-                        if el.is_visible(timeout=500):
-                            err_text = el.inner_text().strip()
-                            if err_text:
-                                break
+                    alert_el = page.locator("#alert_container, #alert_div").first
+                    if alert_el.is_visible(timeout=500):
+                        err_text = alert_el.inner_text().replace("×", "").strip()
                 except Exception:
                     pass
 
-                err_detail = f" Message on page: '{err_text}'" if err_text else ""
+                if not err_text and login_api_response.get("body"):
+                    err_text = login_api_response["body"]
+
+                err_detail = f" Server response: '{err_text}'." if err_text else ""
                 raise RuntimeError(
-                    f"Authentication failed: URL did not change after login ({page.url}).{err_detail} "
+                    f"Authentication failed.{err_detail} URL did not change after login ({page.url}). "
                     "Please verify ERP_USERNAME and ERP_PASSWORD in GitHub Secrets."
                 )
 
