@@ -71,23 +71,24 @@ If your friends are experiencing the same error in their repositories:
 
 ---
 
-## 5. Issue 2: `RuntimeError: Authentication failed: ERP redirected back to login (***Login/)`
+## 5. Issue 2: `Authentication failed: URL did not change after login` (The Thai Spam & API Solution)
 
 ### Why Did This Occur?
-1. **Wrong Element Clicked**: The ERP portal has an `<h4>` heading: `<h4 class="form-title">LOGIN|LBRCE-ERP</h4>`. The selector `text=Login` was clicking this heading instead of the `<button class="btn blue">` submit button!
-2. **AJAX Call Not Waited For**: The ERP login runs an asynchronous AJAX function (`PageMethods.Login`). On success, it redirects to `/Fee/FeeChallanOnline.aspx` or `/Home/`.
-3. **Flawed Wait Condition**: The previous code checked `if "login" not in page.url.lower(): break`. Because the initial login page `https://erp.lbrce.ac.in/` does not have `"login"` in the URL, the loop broke in 0 seconds! The script then navigated to the attendance URL immediately, cancelling the in-flight AJAX login request before cookies were saved.
+1. **The Server-Side SEO Spam Infection**:
+   - In the screenshot taken on GitHub Actions (`attendance_error.png`), the text above the login box showed:
+     `U31 เว็บตรง สล็อตแตกง่าย 2026 ทางเข้า U31 VIP สมัครง่าย...`
+   - The college server has an SEO spam/malware injection that targets foreign/cloud IP addresses (like GitHub Actions runners in Microsoft Azure US/Europe).
+   - When accessed from foreign IPs, the server modifies the HTML page. This injection broke or intercepted the client-side JavaScript (`PageMethods.Login`), so clicking the login button never completed in the cloud!
+   - On residential Indian IPs (your laptop), the server served clean HTML without the spam, which is why your laptop worked but GitHub Actions failed.
 
-### What Was Done to Fix It:
-1. **Target the Exact Button** in `erp_automation/erp_client.py`:
-   - Updated button selector to `button.btn.blue, button:has-text('Login'), button[onclick*='login']`.
-2. **Proper Session Wait**:
-   - Stores `initial_url = page.url` and waits up to 25 seconds for `page.url != initial_url`.
-   - Once redirected to `/Fee/...` or `/Home/`, the session is verified and active.
-3. **Desktop User-Agent & Anti-Bot Flags**:
-   - Added desktop Chrome user-agent and flags (`--disable-blink-features=AutomationControlled`).
-4. **Artifact Screenshot Upload** in `.github/workflows/attendance-check.yml`:
-   - Saves and uploads `attendance_error.png` directly to GitHub Actions if an error occurs.
+### The Permanent Fix: Direct WebMethod API Authentication
+Instead of relying on the browser to interact with the defaced login webpage:
+1. We authenticate **directly** via the backend ASP.NET WebMethod API endpoint:
+   `POST https://erp.lbrce.ac.in/Default.aspx/Login`
+   Payload: `{"UserID": username, "PWD": password}`
+2. The server authenticates, returns `{"d":"2"}`, and immediately issues the valid session cookies (`ASP.NET_SessionId` and `ERP`).
+3. The browser navigates directly to `https://erp.lbrce.ac.in/Discipline/StudentHistory.aspx` as an already authenticated user, completely bypassing the defaced login page!
+4. If direct API login ever fails, it automatically falls back to UI-based login.
 
 ---
 
@@ -96,41 +97,43 @@ If your friends are experiencing the same error in their repositories:
 If your friends need their bot to work on GitHub Actions:
 
 ### Step 1: Update `.github/workflows/attendance-check.yml`
-Change:
-```yaml
-runs-on: ubuntu-latest
-```
-To:
-```yaml
-runs-on: ubuntu-24.04
-```
+1. Change runner OS:
+   ```yaml
+   runs-on: ubuntu-24.04
+   ```
+2. Add unbuffered output to `env:`:
+   ```yaml
+   PYTHONUNBUFFERED: "1"
+   ```
+3. Add debug screenshot upload on failure:
+   ```yaml
+   - name: Upload debug screenshot on failure
+     if: failure()
+     uses: actions/upload-artifact@v4
+     with:
+       name: attendance-debug-screenshot
+       path: attendance_error.png
+       if-no-files-found: ignore
+   ```
 
 ### Step 2: Update `erp_automation/erp_client.py`
-In `fetch_overall_attendance()`, ensure:
-- The login button selector uses:
-  ```python
-  clicked = _click_first(
-      page,
-      [
-          "button.btn.blue",
-          "button:has-text('Login')",
-          "button[onclick*='login']",
-          "input[type='submit']",
-      ],
-  )
-  ```
-- And wait for URL to change from `initial_url`:
-  ```python
-  start_login = time.time()
-  login_success = False
-  while time.time() - start_login < 25:
-      if page.url != initial_url:
-          login_success = True
-          break
-      page.wait_for_timeout(500)
-  ```
+In `fetch_overall_attendance()`, authenticate via direct API before navigating:
+```python
+login_api_url = ERP_LOGIN_URL.rstrip("/") + "/Default.aspx/Login"
+api_res = context.request.post(
+    login_api_url,
+    headers={
+        "Content-Type": "application/json; charset=utf-8",
+        "X-Requested-With": "XMLHttpRequest",
+    },
+    data={"UserID": username, "PWD": password},
+    timeout=20000,
+)
+if api_res.status == 200 and ('"d":"1"' in api_res.text() or '"d":"2"' in api_res.text() or 'dbs' in api_res.text()):
+    api_login_success = True
+```
 
 ### Step 3: Verify GitHub Secrets
 In GitHub -> **Settings** -> **Secrets and variables** -> **Actions**:
-- Ensure `ERP_USERNAME` and `ERP_PASSWORD` have no extra spaces or typos.
+- Ensure `ERP_USERNAME` and `ERP_PASSWORD` match your credentials without spaces.
 

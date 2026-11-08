@@ -219,93 +219,123 @@ def fetch_overall_attendance() -> Dict[str, object]:
         page.on("console", lambda msg: print(f"Browser Console [{msg.type}]: {msg.text}", flush=True))
 
         try:
-            page.goto(ERP_LOGIN_URL, timeout=45000, wait_until="domcontentloaded")
-
-            user_ok = _fill_first(
-                page,
-                [
-                    "#txtusername",
-                    "input[name='txtusername']",
-                    "input[name*='User' i][type='text']",
-                    "input[type='text']",
-                ],
-                username,
-            )
-            pass_ok = _fill_first(
-                page,
-                [
-                    "#txtpassword",
-                    "input[name='txtpassword']",
-                    "input[name*='Pass' i][type='password']",
-                    "input[type='password']",
-                ],
-                password,
-            )
-
-            if not user_ok or not pass_ok:
-                raise RuntimeError("Login fields were not found on ERP login page.")
-
-            initial_url = page.url
-
-            clicked = _click_first(
-                page,
-                [
-                    "button.btn.blue",
-                    "button:has-text('Login')",
-                    "button[onclick*='login']",
-                    "input[type='submit']",
-                ],
-            )
-            if not clicked:
-                try:
-                    page.evaluate("() => typeof login === 'function' && login()")
-                    clicked = True
-                except Exception:
-                    page.keyboard.press("Enter")
-
-            # Wait dynamically up to 25s for login submission and redirect
-            start_login = time.time()
-            login_success = False
-            while time.time() - start_login < 25:
-                # When PageMethods.Login succeeds, the portal redirects to /Home/ or /Fee/...
-                if page.url != initial_url:
-                    login_success = True
-                    break
-
-                # Check if server explicitly returned an error response
-                api_body = login_api_response.get("body", "")
-                if api_body and ("check User Name" in api_body or "Invalid" in api_body or "Error" in api_body):
-                    break
-
-                page.wait_for_timeout(500)
-
-            if not login_success:
-                page.screenshot(path="attendance_error.png")
-                body_snippet = ""
-                try:
-                    body_snippet = page.locator("body").inner_text()[:400].replace("\n", " ").strip()
-                    print(f"Page content after login attempt: {body_snippet}", flush=True)
-                except Exception:
-                    pass
-
-                err_text = ""
-                try:
-                    alert_el = page.locator("#alert_container, #alert_div").first
-                    if alert_el.is_visible(timeout=500):
-                        err_text = alert_el.inner_text().replace("×", "").strip()
-                except Exception:
-                    pass
-
-                if not err_text and login_api_response.get("body"):
-                    err_text = login_api_response["body"]
-                if not err_text and body_snippet:
-                    err_text = body_snippet
-
-                err_detail = f" Server response: '{err_text}'." if err_text else ""
-                raise RuntimeError(
-                    f"Authentication failed.{err_detail} URL did not change after login ({page.url}). "
-                    "Please verify ERP_USERNAME and ERP_PASSWORD in GitHub Secrets."
+            # 1. Attempt direct API authentication first (bypasses corrupted/defaced UI on foreign IPs)
+            api_login_success = False
+            try:
+                login_api_url = ERP_LOGIN_URL.rstrip("/") + "/Default.aspx/Login"
+                api_res = context.request.post(
+                    login_api_url,
+                    headers={
+                        "Content-Type": "application/json; charset=utf-8",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    data={"UserID": username, "PWD": password},
+                    timeout=20000,
                 )
+                print(f"Direct API Login response: status={api_res.status}, body={api_res.text()[:200]}", flush=True)
+                if api_res.status == 200:
+                    body = api_res.text()
+                    if '"d":"1"' in body or '"d":"2"' in body or "dbs" in body:
+                        print("Direct API authentication succeeded!", flush=True)
+                        api_login_success = True
+                    elif "check User Name" in body or "Invalid" in body:
+                        raise RuntimeError(
+                            f"Authentication failed: College portal returned '{body}'. "
+                            "Please check your ERP_USERNAME and ERP_PASSWORD in GitHub Secrets."
+                        )
+            except Exception as e:
+                if "Authentication failed:" in str(e):
+                    raise
+                print(f"Direct API authentication attempt: {e}. Falling back to UI login...", flush=True)
+
+            if not api_login_success:
+                page.goto(ERP_LOGIN_URL, timeout=45000, wait_until="domcontentloaded")
+
+                user_ok = _fill_first(
+                    page,
+                    [
+                        "#txtusername",
+                        "input[name='txtusername']",
+                        "input[name*='User' i][type='text']",
+                        "input[type='text']",
+                    ],
+                    username,
+                )
+                pass_ok = _fill_first(
+                    page,
+                    [
+                        "#txtpassword",
+                        "input[name='txtpassword']",
+                        "input[name*='Pass' i][type='password']",
+                        "input[type='password']",
+                    ],
+                    password,
+                )
+
+                if not user_ok or not pass_ok:
+                    raise RuntimeError("Login fields were not found on ERP login page.")
+
+                initial_url = page.url
+
+                clicked = _click_first(
+                    page,
+                    [
+                        "button.btn.blue",
+                        "button:has-text('Login')",
+                        "button[onclick*='login']",
+                        "input[type='submit']",
+                    ],
+                )
+                if not clicked:
+                    try:
+                        page.evaluate("() => typeof login === 'function' && login()")
+                        clicked = True
+                    except Exception:
+                        page.keyboard.press("Enter")
+
+                # Wait dynamically up to 25s for login submission and redirect
+                start_login = time.time()
+                login_success = False
+                while time.time() - start_login < 25:
+                    # When PageMethods.Login succeeds, the portal redirects to /Home/ or /Fee/...
+                    if page.url != initial_url:
+                        login_success = True
+                        break
+
+                    # Check if server explicitly returned an error response
+                    api_body = login_api_response.get("body", "")
+                    if api_body and ("check User Name" in api_body or "Invalid" in api_body or "Error" in api_body):
+                        break
+
+                    page.wait_for_timeout(500)
+
+                if not login_success:
+                    page.screenshot(path="attendance_error.png")
+                    body_snippet = ""
+                    try:
+                        body_snippet = page.locator("body").inner_text()[:400].replace("\n", " ").strip()
+                        print(f"Page content after login attempt: {body_snippet}", flush=True)
+                    except Exception:
+                        pass
+
+                    err_text = ""
+                    try:
+                        alert_el = page.locator("#alert_container, #alert_div").first
+                        if alert_el.is_visible(timeout=500):
+                            err_text = alert_el.inner_text().replace("×", "").strip()
+                    except Exception:
+                        pass
+
+                    if not err_text and login_api_response.get("body"):
+                        err_text = login_api_response["body"]
+                    if not err_text and body_snippet:
+                        err_text = body_snippet
+
+                    err_detail = f" Server response: '{err_text}'." if err_text else ""
+                    raise RuntimeError(
+                        f"Authentication failed.{err_detail} URL did not change after login ({page.url}). "
+                        "Please verify ERP_USERNAME and ERP_PASSWORD in GitHub Secrets."
+                    )
 
             # Session is established! Navigate to attendance page
             page.wait_for_timeout(1000)

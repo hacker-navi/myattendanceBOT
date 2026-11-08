@@ -9,13 +9,10 @@ See [change.md](change.md) for the full detailed guide.
 - **Change:** Changed `runs-on: ubuntu-latest` to `runs-on: ubuntu-24.04`
 - **Why:** GitHub updated `ubuntu-latest` to an environment (`ubuntu26.04-x64`) that Playwright does not yet support.
 
-### 2. Login & AJAX Submission Fix
+### 2. Direct API Login (Bypasses Server-Side Thai SEO Spam)
 - **File:** `erp_automation/erp_client.py`
-- **Change:** 
-  1. Targeted the real login button (`button.btn.blue, button[onclick*='login']`) instead of the `<h4>` heading.
-  2. Waited dynamically for `page.url != initial_url` (since `PageMethods.Login` redirects to `/Home/` or `/Fee/...` upon success).
-  3. Added desktop Chrome user-agent, anti-bot flags, and auto dialog handler.
-- **Why:** The login uses ASP.NET AJAX (`PageMethods.Login`). Navigating before the AJAX call completed aborted the request, causing ERP to redirect back to login.
+- **Change:** Directly POSTs credentials to `https://erp.lbrce.ac.in/Default.aspx/Login` to obtain session cookies (`ASP.NET_SessionId` and `ERP`), completely bypassing the defaced HTML and JavaScript login form.
+- **Why:** The college server was infected with Thai gambling SEO spam that only targets foreign/cloud IP addresses (like GitHub Actions runners). That injection broke client-side JavaScript on the page. Direct API login bypasses the corrupted UI entirely.
 
 ### 3. Screenshot Artifact on Failure
 - **File:** `.github/workflows/attendance-check.yml`
