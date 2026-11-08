@@ -227,26 +227,51 @@ def fetch_overall_attendance() -> Dict[str, object]:
             if not user_ok or not pass_ok:
                 raise RuntimeError("Login fields were not found on ERP login page.")
 
+            initial_url = page.url
+
             clicked = _click_first(
                 page,
                 [
+                    "button.btn.blue",
                     "button:has-text('Login')",
+                    "button[onclick*='login']",
                     "input[type='submit']",
-                    "text=Login",
                 ],
             )
             if not clicked:
                 page.keyboard.press("Enter")
 
-            # Wait dynamically up to 15s for login submission and redirect
+            # Wait dynamically up to 25s for login submission and redirect
             start_login = time.time()
-            while time.time() - start_login < 15:
-                # If URL changed away from login, login succeeded!
-                if "login" not in page.url.lower():
+            login_success = False
+            while time.time() - start_login < 25:
+                # When PageMethods.Login succeeds, the portal redirects to /Home/ or /Fee/...
+                if page.url != initial_url:
+                    login_success = True
                     break
-                page.wait_for_timeout(1000)
+                page.wait_for_timeout(500)
 
-            page.wait_for_timeout(2000)
+            if not login_success:
+                page.screenshot(path="attendance_error.png")
+                err_text = ""
+                try:
+                    for sel in [".sweet-alert", ".toast-message", ".alert-danger", ".error", "#lblError", "[class*='error' i]", "font[color='red']"]:
+                        el = page.locator(sel).first
+                        if el.is_visible(timeout=500):
+                            err_text = el.inner_text().strip()
+                            if err_text:
+                                break
+                except Exception:
+                    pass
+
+                err_detail = f" Message on page: '{err_text}'" if err_text else ""
+                raise RuntimeError(
+                    f"Authentication failed: URL did not change after login ({page.url}).{err_detail} "
+                    "Please verify ERP_USERNAME and ERP_PASSWORD in GitHub Secrets."
+                )
+
+            # Session is established! Navigate to attendance page
+            page.wait_for_timeout(1000)
             page.goto(ERP_ATTENDANCE_URL, timeout=45000, wait_until="domcontentloaded")
 
             # Check if ERP redirected back to login (indicates invalid credentials or session rejection)

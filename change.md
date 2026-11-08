@@ -71,28 +71,66 @@ If your friends are experiencing the same error in their repositories:
 
 ---
 
-## 5. Issue 2: `RuntimeError: Could not extract attendance data... Current URL: ***Login/`
+## 5. Issue 2: `RuntimeError: Authentication failed: ERP redirected back to login (***Login/)`
 
 ### Why Did This Occur?
-* When navigating to `ERP_ATTENDANCE_URL`, the portal redirected back to `Login/`.
-* On GitHub Actions (cloud runners outside India), network latency is higher. The script was waiting only a fixed 3 seconds before navigating, cutting off the login postback before session cookies were stored.
-* Additionally, Headless Chromium on Linux can be challenged by ERP security if standard browser user agents and dialog handlers are missing.
-* Finally, if `ERP_USERNAME` or `ERP_PASSWORD` in GitHub Secrets has a typo, leading/trailing spaces, or was recently changed, ERP rejects the login.
+1. **Wrong Element Clicked**: The ERP portal has an `<h4>` heading: `<h4 class="form-title">LOGIN|LBRCE-ERP</h4>`. The selector `text=Login` was clicking this heading instead of the `<button class="btn blue">` submit button!
+2. **AJAX Call Not Waited For**: The ERP login runs an asynchronous AJAX function (`PageMethods.Login`). On success, it redirects to `/Fee/FeeChallanOnline.aspx` or `/Home/`.
+3. **Flawed Wait Condition**: The previous code checked `if "login" not in page.url.lower(): break`. Because the initial login page `https://erp.lbrce.ac.in/` does not have `"login"` in the URL, the loop broke in 0 seconds! The script then navigated to the attendance URL immediately, cancelling the in-flight AJAX login request before cookies were saved.
 
 ### What Was Done to Fix It:
-1. **Dynamic Login Wait & Verification** in `erp_automation/erp_client.py`:
-   - Waits up to 15s for the URL to change from the login page instead of a hardcoded 3s.
-   - Trims whitespace from `ERP_USERNAME` and `ERP_PASSWORD`.
-   - Adds desktop Windows Chrome User-Agent and automation avoidance flags.
-   - Automatically accepts any session popup dialogs.
-   - If ERP redirects back to login, extracts and prints the exact error message from the page.
-2. **Artifact Screenshot Upload** in `.github/workflows/attendance-check.yml`:
-   - If attendance extraction fails, GitHub Actions now saves `attendance_error.png` under workflow run artifacts so you can inspect the exact browser screen.
+1. **Target the Exact Button** in `erp_automation/erp_client.py`:
+   - Updated button selector to `button.btn.blue, button:has-text('Login'), button[onclick*='login']`.
+2. **Proper Session Wait**:
+   - Stores `initial_url = page.url` and waits up to 25 seconds for `page.url != initial_url`.
+   - Once redirected to `/Fee/...` or `/Home/`, the session is verified and active.
+3. **Desktop User-Agent & Anti-Bot Flags**:
+   - Added desktop Chrome user-agent and flags (`--disable-blink-features=AutomationControlled`).
+4. **Artifact Screenshot Upload** in `.github/workflows/attendance-check.yml`:
+   - Saves and uploads `attendance_error.png` directly to GitHub Actions if an error occurs.
 
-### Checklist for You and Your Friends:
-1. In your GitHub repository, go to **Settings** -> **Secrets and variables** -> **Actions**.
-2. Verify **`ERP_USERNAME`** and **`ERP_PASSWORD`**:
-   - Ensure there are no accidental spaces before or after the username or password.
-   - Verify roll number characters (e.g. check letter `O` vs digit `0`).
-   - If college portal password was changed recently, update it in GitHub Secrets.
+---
+
+## 6. How Your Friends Can Apply All Fixes
+
+If your friends need their bot to work on GitHub Actions:
+
+### Step 1: Update `.github/workflows/attendance-check.yml`
+Change:
+```yaml
+runs-on: ubuntu-latest
+```
+To:
+```yaml
+runs-on: ubuntu-24.04
+```
+
+### Step 2: Update `erp_automation/erp_client.py`
+In `fetch_overall_attendance()`, ensure:
+- The login button selector uses:
+  ```python
+  clicked = _click_first(
+      page,
+      [
+          "button.btn.blue",
+          "button:has-text('Login')",
+          "button[onclick*='login']",
+          "input[type='submit']",
+      ],
+  )
+  ```
+- And wait for URL to change from `initial_url`:
+  ```python
+  start_login = time.time()
+  login_success = False
+  while time.time() - start_login < 25:
+      if page.url != initial_url:
+          login_success = True
+          break
+      page.wait_for_timeout(500)
+  ```
+
+### Step 3: Verify GitHub Secrets
+In GitHub -> **Settings** -> **Secrets and variables** -> **Actions**:
+- Ensure `ERP_USERNAME` and `ERP_PASSWORD` have no extra spaces or typos.
 
