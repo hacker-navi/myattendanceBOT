@@ -1,5 +1,6 @@
 import re
 import time
+import json
 from typing import Dict, List
 
 from playwright.sync_api import Error as PlaywrightError
@@ -153,6 +154,24 @@ def _extract_subject_rows(page) -> List[Dict[str, str]]:
     return []
 
 
+def _is_successful_login_api_response(body: str) -> bool:
+    if not body:
+        return False
+
+    payload = body.strip()
+    try:
+        parsed = json.loads(payload)
+        if isinstance(parsed, dict):
+            value = str(parsed.get("d", "")).strip()
+            if value in {"1", "2"}:
+                return True
+    except (json.JSONDecodeError, TypeError, ValueError):
+        pass
+
+    compact = re.sub(r"\s+", "", payload).lower()
+    return '"d":"1"' in compact or '"d":"2"' in compact or "dbs" in compact
+
+
 def _launch_browser(playwright):
     browser_args = [
         "--no-sandbox",
@@ -235,7 +254,7 @@ def fetch_overall_attendance() -> Dict[str, object]:
                 print(f"Direct API Login response: status={api_res.status}, body={api_res.text()[:200]}", flush=True)
                 if api_res.status == 200:
                     body = api_res.text()
-                    if '"d":"1"' in body or '"d":"2"' in body or "dbs" in body:
+                    if _is_successful_login_api_response(body):
                         print("Direct API authentication succeeded!", flush=True)
                         api_login_success = True
                     elif "check User Name" in body or "Invalid" in body:
